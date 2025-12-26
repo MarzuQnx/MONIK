@@ -27,6 +27,9 @@ func SetupRoutes(handlers *api.Handlers) *gin.Engine {
 		// Traffic history routes
 		v1.GET("/traffic/:interface", handlers.GetTrafficHistory)
 
+		// Monthly usage routes
+		v1.GET("/usage/:interface", handlers.GetMonthlyUsage)
+
 		// Test data routes
 		v1.POST("/populate-test-data", handlers.PopulateTestData)
 

@@ -138,6 +138,12 @@ func (s *MonitoringService) saveInterfaceData(iface InterfaceData) {
 	if iface.Name == "xether2" {
 		s.handleSnapshot(iface, isReset)
 	}
+
+	// Update MonthlyQuota untuk semua interface
+	now := time.Now()
+	if err := s.updateMonthlyQuota(iface, isReset, now); err != nil {
+		fmt.Printf("[ERROR] Gagal update MonthlyQuota untuk %s: %v\n", iface.Name, err)
+	}
 }
 
 func (s *MonitoringService) handleSnapshot(iface InterfaceData, isReset bool) {
@@ -156,6 +162,64 @@ func (s *MonitoringService) handleSnapshot(iface InterfaceData, isReset bool) {
 		})
 		fmt.Printf("[INFO] Snapshot saved for xether2 | Total: %d bytes\n", curr)
 	}
+}
+
+// updateMonthlyQuota mengupdate atau membuat record MonthlyQuota berdasarkan data interface
+func (s *MonitoringService) updateMonthlyQuota(iface InterfaceData, isReset bool, now time.Time) error {
+	dbMutex.Lock()
+	defer dbMutex.Unlock()
+
+	// Ekstrak informasi tanggal dari waktu saat ini
+	day := now.Day()
+	month := int(now.Month())
+	year := now.Year()
+
+	// Cari record MonthlyQuota berdasarkan interface_name, day, month, year
+	var quota models.MonthlyQuota
+	err := s.db.Where("interface_name = ? AND day = ? AND month = ? AND year = ?",
+		iface.Name, day, month, year).First(&quota).Error
+
+	if err == gorm.ErrRecordNotFound {
+		// Inisialisasi record hari baru
+		newQuota := models.MonthlyQuota{
+			InterfaceName: iface.Name,
+			Day:           day,
+			Month:         month,
+			Year:          year,
+			RxBytes:       0,
+			TxBytes:       0,
+			TotalBytes:    0,
+			TotalRx:       0,
+			TotalTx:       0,
+			LastRxBytes:   iface.RxBytes,
+			LastTxBytes:   iface.TxBytes,
+		}
+		return s.db.Create(&newQuota).Error
+	}
+
+	var deltaRx, deltaTx uint64
+
+	// Hitung Delta berdasarkan nilai counter terakhir yang tercatat di tabel Quota
+	if isReset || iface.RxBytes < quota.LastRxBytes {
+		// Skenario Reset: Ambil nilai baru seutuhnya sebagai delta
+		deltaRx = iface.RxBytes
+		deltaTx = iface.TxBytes
+	} else {
+		// Skenario Normal: Selisih antara counter sekarang dengan counter terakhir yang dicatat
+		deltaRx = iface.RxBytes - quota.LastRxBytes
+		deltaTx = iface.TxBytes - quota.LastTxBytes
+	}
+
+	// Update akumulasi harian dan perbarui tracker counter terakhir
+	return s.db.Model(&quota).Updates(map[string]interface{}{
+		"rx_bytes":      quota.RxBytes + deltaRx,
+		"tx_bytes":      quota.TxBytes + deltaTx,
+		"total_bytes":   (quota.RxBytes + deltaRx) + (quota.TxBytes + deltaTx),
+		"total_rx":      quota.TotalRx + deltaRx,
+		"total_tx":      quota.TotalTx + deltaTx,
+		"last_rx_bytes": iface.RxBytes,
+		"last_tx_bytes": iface.TxBytes,
+	}).Error
 }
 
 // Helpers
@@ -192,6 +256,28 @@ func (s *MonitoringService) GetSystemInfo() (*models.SystemInfo, error) {
 		return nil, err
 	}
 	return &info, nil
+}
+
+// GetMonthlyQuota mengambil data MonthlyQuota berdasarkan interface, bulan, dan tahun
+func (s *MonitoringService) GetMonthlyQuota(interfaceName string, month, year int) ([]models.MonthlyQuota, error) {
+	var quotas []models.MonthlyQuota
+	err := s.db.Where("interface_name = ? AND month = ? AND year = ?",
+		interfaceName, month, year).
+		Order("day ASC").
+		Find("quotas").Error
+	return quotas, err
+}
+
+// GetMonthlyQuotaByDay mengambil data MonthlyQuota untuk hari tertentu
+func (s *MonitoringService) GetMonthlyQuotaByDay(interfaceName string, day, month, year int) (*models.MonthlyQuota, error) {
+	var quota models.MonthlyQuota
+	err := s.db.Where("interface_name = ? AND day = ? AND month = ? AND year = ?",
+		interfaceName, day, month, year).
+		First("quota").Error
+	if err != nil {
+		return nil, err
+	}
+	return &quota, nil
 }
 
 // PopulateTestCounterResetLogs adalah fungsi helper untuk testing (jika Anda masih membutuhkannya di API)

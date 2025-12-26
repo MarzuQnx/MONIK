@@ -63,7 +63,11 @@ type MonthlyQuota struct {
 	RxBytes       uint64         `json:"rx_bytes"`
 	TxBytes       uint64         `json:"tx_bytes"`
 	TotalBytes    uint64         `json:"total_bytes"`
-	QuotaLimit    uint64         `json:"quota_limit"` // 0 means unlimited
+	QuotaLimit    uint64         `json:"quota_limit"`   // 0 means unlimited
+	TotalRx       uint64         `json:"total_rx"`      // Akumulasi total Rx hari ini
+	TotalTx       uint64         `json:"total_tx"`      // Akumulasi total Tx hari ini
+	LastRxBytes   uint64         `json:"last_rx_bytes"` // Nilai counter Rx terakhir dari router
+	LastTxBytes   uint64         `json:"last_tx_bytes"` // Nilai counter Tx terakhir dari router
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 	DeletedAt     gorm.DeletedAt `json:"-" gorm:"index"`

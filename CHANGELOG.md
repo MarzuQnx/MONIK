@@ -5,6 +5,37 @@ Semua perubahan yang layak dicatat untuk proyek ini didokumentasikan dalam file 
 Format ini didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 dan proyek ini mengikuti [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-12-26
+
+### Ditambahkan
+- **Monthly Usage API**: Endpoint `/api/v1/usage/:interface` untuk pelacakan penggunaan bulanan dengan validasi parameter
+- **Production-Ready Data Integrity**: Sistem kalkulasi delta yang lebih robust untuk MonthlyQuota
+- **Enhanced API Response**: Respons API monthly usage包含了 totals calculation dan daily statistics
+- **Router Integration**: Registrasi endpoint baru di konfigurasi router untuk akses yang konsisten
+
+### Diubah
+- **Enhanced updateMonthlyQuota Logic**: Perbaikan kalkulasi delta menggunakan LastRxBytes/LastTxBytes dari record quota untuk akurasi data
+- **Improved Database Operations**: Optimasi menggunakan Model().Updates() untuk performa yang lebih baik dan efisiensi
+- **Better Error Handling**: Peningkatan validasi input dan error responses pada endpoint baru
+
+### Diperbaiki
+- **Compilation Errors**: Perbaikan syntax error di service.go (Find/First method calls) yang menyebabkan build failure
+- **Missing Method**: Penyelesaian missing PopulateTestCounterResetLogs method di MonitoringService untuk API handler
+- **Router Configuration**: Penambahan route untuk endpoint monthly usage di router.go
+- **Data Integrity Issues**: Perbaikan logika updateMonthlyQuota untuk handling counter reset dan system restart
+
+### Keamanan
+- **Data Integrity**: Peningkatan integritas data dengan kalkulasi delta yang lebih akurat terhadap quota records
+- **Input Validation**: Validasi parameter month (1-12) dan year (2020-2100) pada endpoint monthly usage
+- **Error Sanitization**: Pencegahan information leakage melalui error messages yang terkontrol
+
+### Performa
+- **Database Optimization**: Efficient batch updates menggunakan GORM Model().Updates()
+- **API Response Time**: Optimasi query dengan proper indexing dan ordering
+- **Memory Usage**: Pengurangan memory footprint dengan cleaner variable management
+
+---
+
 ## [1.2.1] - 2025-12-26
 
 ### Diperbaiki
@@ -40,6 +71,8 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Pengecekan comment interface untuk deteksi WAN yang lebih akurat
 - Perbaikan unused parameter ctx pada ensureConnected
 - Peningkatan confidence score untuk deteksi pattern
+- **Monthly Usage API**: Endpoint `/api/v1/usage/:interface` untuk pelacakan penggunaan bulanan
+- **Production-Ready Data Integrity**: Sistem kalkulasi delta yang lebih robust untuk MonthlyQuota
 
 ### Diubah
 - Mengonsolidasikan seluruh dokumentasi ke CHANGELOG terpadu
@@ -47,18 +80,25 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Meningkatkan pipeline CI/CD dengan semantic release
 - Mengoptimalkan versioning migrasi database
 - Menyederhanakan proses release dengan tagging otomatis
+- **Enhanced updateMonthlyQuota Logic**: Perbaikan kalkulasi delta menggunakan LastRxBytes/LastTxBytes dari record quota
+- **Improved Database Operations**: Optimasi menggunakan Model().Updates() untuk performa yang lebih baik
 
 ### Diperbaiki
 - Masalah sinkronisasi versi antar komponen
 - Informasi versi yang hilang di release
 - Konflik versioning skema database
 - Masalah timing pipeline CI/CD
+- **Compilation Errors**: Perbaikan syntax error di service.go (Find/First method calls)
+- **Missing Method**: Penyelesaian missing PopulateTestCounterResetLogs method di MonitoringService
+- **Router Configuration**: Penambahan route untuk endpoint monthly usage
 
 ### Keamanan
 - Peningkatan validasi input untuk semua endpoint API
 - Peningkatan logging terstruktur untuk event keamanan
 - Peningkatan hardening autentikasi untuk koneksi MikroTik
 - Implementasi audit trail untuk aksi pengguna
+- **Data Integrity**: Peningkatan integritas data dengan kalkulasi delta yang lebih akurat
+- **Input Validation**: Validasi parameter month/year pada endpoint monthly usage
 
 ### Diuji
 - Integrasi suite testing API komprehensif
@@ -66,6 +106,8 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Testing migrasi database
 - Testing integrasi multi-komponen
 - Validasi proses release end-to-end
+- **Build Verification**: Testing compilation success setelah perbaikan error
+- **API Endpoint Testing**: Verifikasi fungsi endpoint monthly usage
 
 ### Depresiasi
 - File CHANGELOG komponen individual

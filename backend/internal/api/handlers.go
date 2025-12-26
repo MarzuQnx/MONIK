@@ -298,3 +298,67 @@ func (h *Handlers) SubmitMonitoringJob(c *gin.Context) {
 		},
 	})
 }
+
+// GetMonthlyUsage returns monthly usage data for a specific interface
+// GET /api/v1/usage/:interface?month=12&year=2025
+func (h *Handlers) GetMonthlyUsage(c *gin.Context) {
+	ifaceName := c.Param("interface")
+	if ifaceName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Interface name is required",
+		})
+		return
+	}
+
+	// Parse query parameters with defaults to current month/year
+	now := time.Now()
+	monthStr := c.DefaultQuery("month", strconv.Itoa(int(now.Month())))
+	yearStr := c.DefaultQuery("year", strconv.Itoa(now.Year()))
+
+	month, err := strconv.Atoi(monthStr)
+	if err != nil || month < 1 || month > 12 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid month parameter (1-12)",
+		})
+		return
+	}
+
+	year, err := strconv.Atoi(yearStr)
+	if err != nil || year < 2020 || year > 2100 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid year parameter",
+		})
+		return
+	}
+
+	// Get monthly usage data from database
+	var stats []models.MonthlyQuota
+	if err := h.db.Where("interface_name = ? AND month = ? AND year = ?",
+		ifaceName, month, year).Order("day ASC").Find(&stats).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to retrieve monthly usage data",
+		})
+		return
+	}
+
+	// Calculate totals
+	var totalRx, totalTx, totalBytes uint64
+	for _, stat := range stats {
+		totalRx += stat.TotalRx
+		totalTx += stat.TotalTx
+		totalBytes += stat.TotalRx + stat.TotalTx
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"interface_name": ifaceName,
+		"month":          month,
+		"year":           year,
+		"daily_stats":    stats,
+		"totals": gin.H{
+			"total_rx":    totalRx,
+			"total_tx":    totalTx,
+			"total_bytes": totalBytes,
+		},
+		"days_with_data": len(stats),
+	})
+}
