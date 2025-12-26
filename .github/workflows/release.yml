@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  push:
+    branches: 
+      - main
+      - master
+  pull_request:
+    branches: 
+      - main
+      - master
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install semantic-release
+        run: |
+          npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github conventional-changelog-cli
+
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npx semantic-release
+
+      - name: Build and Test
+        run: |
+          echo "Building and testing components..."
+          
+          # Build backend
+          if [ -d "backend" ]; then
+            cd backend
+            go mod tidy
+            go test ./...
+            cd ..
+          fi
+          
+          # Build frontend if exists
+          if [ -d "frontend" ]; then
+            cd frontend
+            npm install
+            npm run build
+            cd ..
+          fi
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.semantic-release.outputs.next-release-version }}
+          release_name: Release ${{ steps.semantic-release.outputs.next-release-version }}
+          draft: false
+          prerelease: false
+          body: ${{ steps.semantic-release.outputs.next-release-notes }}
+
+  deploy:
+    needs: version
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Production
+        run: |
+          echo "Deployment process would go here"
+          echo "Release version: ${{ github.ref_name }}"

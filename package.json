@@ -1,0 +1,52 @@
+{
+  "name": "monik-enterprise",
+  "version": "1.0.0",
+  "description": "Enterprise monitoring system for MikroTik routers",
+  "main": "backend/cmd/monik/main.go",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "version": "semantic-release",
+    "changelog": "conventional-changelog -p conventionalcommits -i CHANGELOG.md -s",
+    "precommit": "bash .git/hooks/pre-commit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-org/monik-enterprise.git"
+  },
+  "keywords": [
+    "monitoring",
+    "mikrotik",
+    "network",
+    "enterprise"
+  ],
+  "author": "Your Organization",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/your-org/monik-enterprise/issues"
+  },
+  "homepage": "https://github.com/your-org/monik-enterprise#readme",
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^9.0.3",
+    "conventional-changelog-cli": "^3.0.0",
+    "semantic-release": "^24.1.0"
+  },
+  "release": {
+    "branches": [
+      "main",
+      "master",
+      {
+        "name": "develop",
+        "prerelease": "beta"
+      }
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      "@semantic-release/git",
+      "@semantic-release/github"
+    ]
+  }
+}
