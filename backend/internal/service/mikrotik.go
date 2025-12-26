@@ -61,11 +61,19 @@ func (s *MikroTikService) connect(ctx context.Context) error {
 	}
 
 	address := fmt.Sprintf("%s:%d", s.config.IP, s.config.Port)
-	client, err := routeros.DialContext(ctx, address, s.config.Username, s.config.Password)
+
+	// Add explicit dial timeout of 5 seconds
+	dialCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	fmt.Printf("[MIKROTIK] Attempting to connect to %s with 5s timeout...\n", address)
+	client, err := routeros.DialContext(dialCtx, address, s.config.Username, s.config.Password)
 	if err != nil {
+		fmt.Printf("[MIKROTIK] Connection failed: %v\n", err)
 		return fmt.Errorf("failed to connect to router: %w", err)
 	}
 
+	fmt.Printf("[MIKROTIK] Successfully connected to %s\n", address)
 	s.client = client
 	return nil
 }
@@ -94,14 +102,25 @@ func (s *MikroTikService) GetInterfaces(ctx context.Context) ([]InterfaceData, e
 	defer s.mu.Unlock()
 
 	if err := s.connect(ctx); err != nil {
+		fmt.Printf("[MIKROTIK] GetInterfaces: Connection failed: %v\n", err)
 		return nil, err
 	}
 
-	reply, err := s.client.RunContext(ctx, "/interface/print")
+	fmt.Printf("[MIKROTIK] GetInterfaces: Sending /interface/print command with context timeout...\n")
+
+	// Add explicit timeout for the command execution
+	cmdCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	reply, err := s.client.RunContext(cmdCtx, "/interface/print")
 	if err != nil {
+		fmt.Printf("[MIKROTIK] GetInterfaces: Command failed with timeout protection: %v\n", err)
+		// Force disconnect on error to trigger reconnect next time
+		s.client = nil
 		return nil, fmt.Errorf("failed to get interfaces: %w", err)
 	}
 
+	fmt.Printf("[MIKROTIK] GetInterfaces: Received %d interfaces\n", len(reply.Re))
 	var interfaces []InterfaceData
 	for _, re := range reply.Re {
 		iface := InterfaceData{
@@ -127,19 +146,31 @@ func (s *MikroTikService) GetSystemInfo(ctx context.Context) (*SystemInfo, error
 	defer s.mu.Unlock()
 
 	if err := s.connect(ctx); err != nil {
+		fmt.Printf("[MIKROTIK] GetSystemInfo: Connection failed: %v\n", err)
 		return nil, err
 	}
 
 	info := &SystemInfo{}
 
-	// Get identity
-	reply, err := s.client.RunContext(ctx, "/system/identity/print")
+	// Get identity with timeout protection
+	fmt.Printf("[MIKROTIK] GetSystemInfo: Getting identity with timeout protection...\n")
+	cmdCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	reply, err := s.client.RunContext(cmdCtx, "/system/identity/print")
 	if err == nil && len(reply.Re) > 0 {
 		info.Identity = reply.Re[0].Map["name"]
+		fmt.Printf("[MIKROTIK] GetSystemInfo: Identity = %s\n", info.Identity)
+	} else if err != nil {
+		fmt.Printf("[MIKROTIK] GetSystemInfo: Failed to get identity with timeout: %v\n", err)
 	}
 
-	// Get resource info
-	reply, err = s.client.RunContext(ctx, "/system/resource/print")
+	// Get resource info with timeout protection
+	fmt.Printf("[MIKROTIK] GetSystemInfo: Getting resource info with timeout protection...\n")
+	cmdCtx, cancel = context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	reply, err = s.client.RunContext(cmdCtx, "/system/resource/print")
 	if err == nil && len(reply.Re) > 0 {
 		re := reply.Re[0].Map
 		info.BoardName = re["board-name"]
@@ -147,21 +178,39 @@ func (s *MikroTikService) GetSystemInfo(ctx context.Context) (*SystemInfo, error
 		info.Uptime = re["uptime"]
 		info.CPU = re["cpu-load"] + "%"
 		info.Memory = re["free-memory"] + "/" + re["total-memory"]
+		fmt.Printf("[MIKROTIK] GetSystemInfo: Board=%s, Version=%s, CPU=%s\n",
+			info.BoardName, info.Version, info.CPU)
+	} else if err != nil {
+		fmt.Printf("[MIKROTIK] GetSystemInfo: Failed to get resource info with timeout: %v\n", err)
 	}
 
-	// Get disk info
-	reply, err = s.client.RunContext(ctx, "/system/resource/print")
+	// Get disk info with timeout protection
+	fmt.Printf("[MIKROTIK] GetSystemInfo: Getting disk info with timeout protection...\n")
+	cmdCtx, cancel = context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	reply, err = s.client.RunContext(cmdCtx, "/system/resource/print")
 	if err == nil && len(reply.Re) > 0 {
 		re := reply.Re[0].Map
 		if free, total := re["free-hdd-space"], re["total-hdd-space"]; free != "" && total != "" {
 			info.Disk = free + "/" + total
+			fmt.Printf("[MIKROTIK] GetSystemInfo: Disk = %s\n", info.Disk)
 		}
+	} else if err != nil {
+		fmt.Printf("[MIKROTIK] GetSystemInfo: Failed to get disk info with timeout: %v\n", err)
 	}
 
-	// Get timezone
-	reply, err = s.client.RunContext(ctx, "/system/clock/print")
+	// Get timezone with timeout protection
+	fmt.Printf("[MIKROTIK] GetSystemInfo: Getting timezone with timeout protection...\n")
+	cmdCtx, cancel = context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	reply, err = s.client.RunContext(cmdCtx, "/system/clock/print")
 	if err == nil && len(reply.Re) > 0 {
 		info.Timezone = reply.Re[0].Map["time-zone-name"]
+		fmt.Printf("[MIKROTIK] GetSystemInfo: Timezone = %s\n", info.Timezone)
+	} else if err != nil {
+		fmt.Printf("[MIKROTIK] GetSystemInfo: Failed to get timezone with timeout: %v\n", err)
 	}
 
 	return info, nil
@@ -173,17 +222,28 @@ func (s *MikroTikService) GetTrafficStats(ctx context.Context, interfaceName str
 	defer s.mu.Unlock()
 
 	if err := s.connect(ctx); err != nil {
+		fmt.Printf("[MIKROTIK] GetTrafficStats: Connection failed: %v\n", err)
 		return nil, err
 	}
 
-	reply, err := s.client.RunContext(ctx, "/interface/monitor-traffic",
+	fmt.Printf("[MIKROTIK] GetTrafficStats: Monitoring traffic for %s with timeout protection...\n", interfaceName)
+
+	// Add explicit timeout for traffic monitoring command
+	cmdCtx, cancel := context.WithTimeout(ctx, 8*time.Second)
+	defer cancel()
+
+	reply, err := s.client.RunContext(cmdCtx, "/interface/monitor-traffic",
 		fmt.Sprintf("=interface=%s", interfaceName),
 		"=once=")
 	if err != nil {
+		fmt.Printf("[MIKROTIK] GetTrafficStats: Command failed with timeout protection: %v\n", err)
+		// Force disconnect on error to trigger reconnect next time
+		s.client = nil
 		return nil, fmt.Errorf("failed to get traffic stats: %w", err)
 	}
 
 	if len(reply.Re) == 0 {
+		fmt.Printf("[MIKROTIK] GetTrafficStats: No data returned for %s\n", interfaceName)
 		return nil, fmt.Errorf("no data returned for interface %s", interfaceName)
 	}
 
@@ -197,9 +257,11 @@ func (s *MikroTikService) GetTrafficStats(ctx context.Context, interfaceName str
 	// Parse rates (bits per second)
 	if rxRate, err := parseRate(re["rx-bits-per-second"]); err == nil {
 		data.RxRate = rxRate
+		fmt.Printf("[MIKROTIK] GetTrafficStats: %s RxRate = %.2f Mbps\n", interfaceName, rxRate)
 	}
 	if txRate, err := parseRate(re["tx-bits-per-second"]); err == nil {
 		data.TxRate = txRate
+		fmt.Printf("[MIKROTIK] GetTrafficStats: %s TxRate = %.2f Mbps\n", interfaceName, txRate)
 	}
 
 	return data, nil
@@ -211,21 +273,33 @@ func (s *MikroTikService) GetLastRebootLog(ctx context.Context) (time.Time, erro
 	defer s.mu.Unlock()
 
 	if err := s.connect(ctx); err != nil {
+		fmt.Printf("[MIKROTIK] GetLastRebootLog: Connection failed: %v\n", err)
 		return time.Time{}, err
 	}
 
+	fmt.Printf("[MIKROTIK] GetLastRebootLog: Querying logs for reboot events with timeout protection...\n")
+
+	// Add explicit timeout for log query command
+	cmdCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
 	// Query logs for reboot events
-	reply, err := s.client.RunContext(ctx, "/log/print",
+	reply, err := s.client.RunContext(cmdCtx, "/log/print",
 		"where=topics~\"system\"",
 		"?message~\"reboot\"|?message~\"started\"|?message~\"RouterOS\"")
 	if err != nil {
+		fmt.Printf("[MIKROTIK] GetLastRebootLog: Failed to get logs with timeout protection: %v\n", err)
+		// Force disconnect on error to trigger reconnect next time
+		s.client = nil
 		return time.Time{}, fmt.Errorf("failed to get logs: %w", err)
 	}
 
 	if len(reply.Re) == 0 {
+		fmt.Printf("[MIKROTIK] GetLastRebootLog: No reboot logs found\n")
 		return time.Time{}, fmt.Errorf("no reboot logs found")
 	}
 
+	fmt.Printf("[MIKROTIK] GetLastRebootLog: Found %d log entries\n", len(reply.Re))
 	// Find the most recent reboot log
 	var latestTime time.Time
 	for _, re := range reply.Re {
@@ -246,9 +320,11 @@ func (s *MikroTikService) GetLastRebootLog(ctx context.Context) (time.Time, erro
 	}
 
 	if latestTime.IsZero() {
+		fmt.Printf("[MIKROTIK] GetLastRebootLog: Could not parse any reboot time\n")
 		return time.Time{}, fmt.Errorf("could not parse any reboot time")
 	}
 
+	fmt.Printf("[MIKROTIK] GetLastRebootLog: Latest reboot time = %v\n", latestTime)
 	return latestTime, nil
 }
 

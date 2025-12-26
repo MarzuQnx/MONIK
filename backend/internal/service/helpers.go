@@ -17,3 +17,11 @@ func parseUint64(s string) uint64 {
 	fmt.Printf("Warning: Failed to parse uint64 from string: '%s'\n", s)
 	return 0
 }
+
+// CalculateDelta calculates the delta between current and previous values with protection against false resets
+func CalculateDelta(current, previous uint64, isReset bool) uint64 {
+	if isReset || current < previous {
+		return current // If reset, use current value as new baseline
+	}
+	return current - previous
+}

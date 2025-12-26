@@ -134,6 +134,21 @@ Gunakan script versioning:
 ./scripts/migrate-changelog.sh
 ```
 
+### Perbaikan Koneksi dan Stabilitas (1.3.1)
+
+Untuk perbaikan koneksi dan stabilitas sistem:
+
+```bash
+# Commit perbaikan koneksi
+git add .
+git commit -m "fix(mikrotik): tambahkan timeout protection di semua metode"
+git commit -m "fix(service): perbaiki logika collectData agar tidak early return"
+git commit -m "feat(service): tambahkan delta calculation protection"
+
+# Push dan trigger release
+git push origin main
+```
+
 ## 🔧 Konfigurasi
 
 ### File Konfigurasi

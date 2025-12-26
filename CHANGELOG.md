@@ -5,6 +5,43 @@ Semua perubahan yang layak dicatat untuk proyek ini didokumentasikan dalam file 
 Format ini didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 dan proyek ini mengikuti [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2025-12-26
+
+### Ditambahkan
+- **Connection Timeout Protection**: Implementasi timeout protection di semua metode MikroTik untuk mencegah hanging
+- **Anti-Early Return Logic**: Perbaikan logika collectData agar tidak langsung return saat router offline
+- **Delta Calculation Protection**: Validasi tambahan di updateMonthlyQuota untuk mencegah deteksi reset palsu
+- **Enhanced Error Handling**: Penanganan error yang lebih komprehensif untuk traffic stats yang gagal
+- **CalculateDelta Helper**: Fungsi baru di helpers.go untuk proteksi delta calculation
+
+### Diubah
+- **GetInterfaces Timeout**: Menambahkan 10 detik timeout protection di GetInterfaces()
+- **GetSystemInfo Timeout**: Menambahkan 5 detik timeout protection di GetSystemInfo()
+- **GetTrafficStats Timeout**: Menambahkan 8 detik timeout protection di GetTrafficStats()
+- **GetLastRebootLog Timeout**: Menambahkan 10 detik timeout protection di GetLastRebootLog()
+- **collectData Logic**: Memperbaiki logika agar tetap melanjutkan proses meskipun router offline
+- **updateMonthlyQuota Validation**: Menambahkan validasi tambahan untuk mencegah nilai negatif
+
+### Diperbaiki
+- **Connection Hanging**: Perbaikan koneksi hanging saat router tidak merespons karena timeout protection
+- **Data Inconsistency**: Perbaikan ketidakonsistenan data saat router offline karena anti-early return
+- **False Reset Detection**: Perbaikan deteksi reset palsu saat router mati lalu hidup kembali
+- **Error Handling**: Perbaikan penanganan error untuk traffic stats yang gagal
+- **Logging Consistency**: Perbaikan konsistensi logging untuk debugging dan monitoring
+
+### Keamanan
+- **Connection Stability**: Pencegahan sistem hang akibat koneksi MikroTik yang tidak stabil
+- **Data Integrity**: Peningkatan integritas data dengan validasi delta calculation yang lebih ketat
+- **Graceful Degradation**: Sistem tetap berjalan meskipun koneksi ke router terputus
+- **Error Sanitization**: Pencegahan information leakage melalui error messages yang terkontrol
+
+### Performa
+- **Connection Management**: Optimasi manajemen koneksi dengan timeout protection
+- **Error Recovery**: Peningkatan kemampuan pemulihan error saat koneksi terputus
+- **Memory Usage**: Pengurangan memory footprint dengan error handling yang lebih baik
+
+---
+
 ## [1.3.0] - 2025-12-26
 
 ### Ditambahkan
