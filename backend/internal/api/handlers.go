@@ -181,6 +181,15 @@ func (h *Handlers) GetWANInterface(c *gin.Context) {
 		return
 	}
 
+	// Jika WAN interface adalah "none", berikan respons yang lebih informatif
+	if wan.Name == "none" {
+		c.JSON(http.StatusOK, gin.H{
+			"wan_interface": wan,
+			"message":       "No active WAN interface detected. Please check your router configuration.",
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"wan_interface": wan,
 	})

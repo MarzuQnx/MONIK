@@ -5,6 +5,25 @@ Semua perubahan yang layak dicatat untuk proyek ini didokumentasikan dalam file 
 Format ini didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 dan proyek ini mengikuti [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2025-12-26
+
+### Diperbaiki
+- **Panic Prevention**: Perbaikan nil pointer dereference pada WANDetectionService
+- **Connection Resilience**: Implementasi lazy reconnection untuk koneksi MikroTik yang terputus
+- **Graceful Fallback**: Sistem sekarang mengembalikan "none" dengan confidence 0.0 alih-alih panic saat tidak ada WAN terdeteksi
+- **Circuit Breaker**: Penambahan circuit breaker sederhana untuk koneksi MikroTik yang rusak
+
+### Diubah
+- **Error Handling**: Semua fungsi deteksi WAN sekarang memiliki pengecekan nil pointer sebelum eksekusi
+- **Connection Management**: Implementasi `ensureConnected()` untuk pengecekan koneksi sebelum deteksi
+- **Response Format**: Mengembalikan objek WANInterface lengkap dengan status error alih-alih error panic
+
+### Keamanan
+- **Stability**: Pencegahan crash sistem akibat koneksi MikroTik yang tidak stabil
+- **Graceful Degradation**: Sistem tetap berjalan meskipun koneksi ke router terputus
+
+---
+
 ## [Unreleased]
 
 ### Ditambahkan
@@ -17,6 +36,10 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Integrasi shields.io untuk version dan build badges
 - Pelacakan dan logging event keamanan
 - Integrasi framework testing komprehensif
+- Support keyword "SUMBER" pada deteksi WAN
+- Pengecekan comment interface untuk deteksi WAN yang lebih akurat
+- Perbaikan unused parameter ctx pada ensureConnected
+- Peningkatan confidence score untuk deteksi pattern
 
 ### Diubah
 - Mengonsolidasikan seluruh dokumentasi ke CHANGELOG terpadu

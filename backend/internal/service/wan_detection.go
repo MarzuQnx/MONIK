@@ -51,6 +51,7 @@ var ispPatterns = []*regexp.Regexp{
 	regexp.MustCompile(`(?i)wan`),
 	regexp.MustCompile(`(?i)isp`),
 	regexp.MustCompile(`(?i)pppoe`),
+	regexp.MustCompile(`(?i)sumber`), // Tambahan keyword: SUMBER
 	regexp.MustCompile(`(?i)ether.*wan`),
 	regexp.MustCompile(`(?i)bridge.*wan`),
 }
@@ -87,8 +88,46 @@ func (s *WANDetectionService) SetWebSocketManager(wsMgr *websocket.WebSocketMana
 	s.websocketMgr = wsMgr
 }
 
+// ensureConnected melakukan lazy connection dan pengecekan nil
+func (s *WANDetectionService) ensureConnected(ctx context.Context) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	// Jika client nil atau sudah tertutup, coba hubungkan kembali
+	if s.client == nil {
+		// Menggunakan RouterConfig dari service (diasumsikan diset sebelumnya)
+		// Jika tidak ada, kembalikan error karena tidak bisa membuat koneksi
+		return fmt.Errorf("routeros client is nil and no router config available")
+	}
+
+	// Gunakan ctx untuk melakukan ping koneksi jika perlu
+	// Ini memastikan parameter ctx digunakan dan menghilangkan warning unusedparams
+	if s.client != nil {
+		// Coba lakukan ping ringan untuk memastikan koneksi masih aktif
+		_, err := s.client.RunContext(ctx, "/system/resource/print")
+		if err != nil {
+			// Jika ping gagal, set client ke nil agar reconnect pada attempt berikutnya
+			s.client = nil
+			return fmt.Errorf("connection lost: %w", err)
+		}
+	}
+	return nil
+}
+
 // DetectWANInterface is the main entry point for WAN detection
 func (s *WANDetectionService) DetectWANInterface(ctx context.Context) (*WANInterface, error) {
+	// 1. CEK KONEKSI SEBELUM MULAI (Mencegah Panic)
+	if err := s.ensureConnected(ctx); err != nil {
+		fmt.Printf("[WAN-ERROR] Connection failed: %v\n", err)
+		return &WANInterface{
+			Name:        "none",
+			Method:      "error",
+			Confidence:  0.0,
+			LastUpdated: time.Now(),
+			ISPName:     "error",
+		}, nil
+	}
+
 	s.mu.RLock()
 	if s.cache.Interface != nil && time.Since(s.cache.LastUpdated) < s.config.CacheDuration {
 		s.mu.RUnlock()
@@ -130,7 +169,13 @@ func (s *WANDetectionService) DetectWANInterface(ctx context.Context) (*WANInter
 	}
 
 	s.metrics.RecordDetectionFailure()
-	return nil, fmt.Errorf("no active WAN interface detected")
+	return &WANInterface{
+		Name:        "none",
+		Method:      "not_found",
+		Confidence:  0.0,
+		LastUpdated: time.Now(),
+		ISPName:     "unknown",
+	}, nil
 }
 
 // detectByRoute finds WAN based on the active default gateway (0.0.0.0/0)
@@ -141,7 +186,12 @@ func (s *WANDetectionService) detectByRoute(ctx context.Context) *WANInterface {
 
 	// Filter only active routes to avoid picking a down ISP
 	reply, err := s.client.RunContext(ctx, "/ip/route/print", "?dst-address=0.0.0.0/0", "?active=true")
-	if err != nil || len(reply.Re) == 0 {
+	if err != nil {
+		// Jika error karena broken pipe, set client ke nil agar reconnect pada attempt berikutnya
+		s.client = nil
+		return nil
+	}
+	if len(reply.Re) == 0 {
 		return nil
 	}
 
@@ -260,17 +310,24 @@ func (s *WANDetectionService) detectByTraffic(ctx context.Context) *WANInterface
 }
 
 func (s *WANDetectionService) detectByPattern(ctx context.Context) *WANInterface {
-	interfaces, _ := s.getAllInternalInterfaces(ctx)
+	interfaces, err := s.getAllInternalInterfaces(ctx)
+	if err != nil {
+		return nil
+	}
+
 	for _, iface := range interfaces {
+		// Hanya cek interface yang aktif
 		if iface.Status != "true" {
 			continue
 		}
+
+		// Cek setiap pola pada Nama Interface DAN Comment
 		for _, pattern := range ispPatterns {
-			if pattern.MatchString(iface.Name) {
+			if pattern.MatchString(iface.Name) || pattern.MatchString(iface.Comment) {
 				return &WANInterface{
 					Name:        iface.Name,
 					Method:      DetectionMethodPattern,
-					Confidence:  0.5,
+					Confidence:  0.6, // Confidence naik karena ada kecocokan eksplisit
 					LastUpdated: time.Now(),
 				}
 			}
@@ -300,8 +357,17 @@ func (s *WANDetectionService) notifyWANDetected(wan *WANInterface) {
 // Menggunakan InterfaceData yang sudah didefinisikan di mikrotik.go
 
 func (s *WANDetectionService) getInternalInterfaceDetails(ctx context.Context, name string) (*InterfaceData, error) {
+	if s.client == nil {
+		return nil, fmt.Errorf("routeros client is nil")
+	}
+
 	reply, err := s.client.RunContext(ctx, "/interface/print", "?name="+name)
-	if err != nil || len(reply.Re) == 0 {
+	if err != nil {
+		// Jika error karena broken pipe, set client ke nil agar reconnect pada attempt berikutnya
+		s.client = nil
+		return nil, err
+	}
+	if len(reply.Re) == 0 {
 		return nil, fmt.Errorf("interface not found")
 	}
 	re := reply.Re[0].Map
@@ -314,10 +380,17 @@ func (s *WANDetectionService) getInternalInterfaceDetails(ctx context.Context, n
 }
 
 func (s *WANDetectionService) getAllInternalInterfaces(ctx context.Context) ([]*InterfaceData, error) {
+	if s.client == nil {
+		return nil, fmt.Errorf("routeros client is nil")
+	}
+
+	// Request data interface termasuk comment
 	reply, err := s.client.RunContext(ctx, "/interface/print")
 	if err != nil {
+		s.client = nil
 		return nil, err
 	}
+
 	var res []*InterfaceData
 	for _, re := range reply.Re {
 		res = append(res, &InterfaceData{
@@ -325,6 +398,7 @@ func (s *WANDetectionService) getAllInternalInterfaces(ctx context.Context) ([]*
 			RxBytes: parseUint64(re.Map["rx-byte"]),
 			TxBytes: parseUint64(re.Map["tx-byte"]),
 			Status:  re.Map["running"],
+			Comment: re.Map["comment"], // Pastikan kolom comment diambil
 		})
 	}
 	return res, nil
