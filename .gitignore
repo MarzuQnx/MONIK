@@ -39,6 +39,7 @@ logs/
 *.db
 *.sqlite
 *.sqlite3
+data/
 
 # Temporary files
 *.tmp
@@ -61,6 +62,22 @@ out/
 
 # Documentation folder
 docs/
+
+# Images and media files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.ico
+*.svg
+
+# Debug files
+debug_*.go
+
+# Temporary database files
+*.db-shm
+*.db-wal
 
 # Docs
 docs/
