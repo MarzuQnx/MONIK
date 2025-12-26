@@ -2,9 +2,9 @@
 
 Dokumentasi ini menjelaskan sistem versioning terpadu yang digunakan dalam proyek MONIK-ENTERPRISE.
 
-## 📋 Overview
+## 📋 Gambaran Umum
 
-Sistem versioning ini menggunakan pendekatan **Semantic Versioning (SemVer)** dengan otomatisasi berbasis **Conventional Commits**. Semua perubahan proyek terdokumentasi dalam satu CHANGELOG terpadu.
+Sistem versioning ini menggunakan pendekatan **Semantic Versioning (SemVer)** dengan otomatisasi berbasis **Conventional Commits**. Seluruh perubahan proyek terdokumentasi dalam satu CHANGELOG terpadu.
 
 ## 🏗️ Arsitektur Versioning
 
@@ -19,103 +19,103 @@ graph TD
     G --> H[Release Package]
 ```
 
-## 📝 Conventional Commits Format
+## 📝 Format Conventional Commits
 
 Semua commit harus mengikuti format berikut:
 
 ```
-<type>(<scope>): <description>
+<type>(<scope>): <deskripsi>
 
-[optional body]
+[badan opsional]
 
-[optional footer(s)]
+[footer opsional]
 ```
 
-### Commit Types
+### Jenis Commit
 
-| Type | Deskripsi | Contoh |
+| Jenis | Deskripsi | Contoh |
 |------|-----------|--------|
-| `feat` | Fitur baru | `feat(api): add user authentication` |
-| `fix` | Perbaikan bug | `fix(database): fix connection timeout` |
-| `perf` | Optimasi performa | `perf(api): optimize query performance` |
-| `revert` | Revert perubahan | `revert(feat): revert user authentication` |
-| `docs` | Perubahan dokumentasi | `docs(readme): update installation guide` |
-| `style` | Perubahan formatting | `style(code): fix indentation` |
-| `refactor` | Refactoring kode | `refactor(api): simplify endpoint logic` |
-| `test` | Perubahan testing | `test(api): add unit tests` |
-| `chore` | Perubahan maintenance | `chore(deps): update dependencies` |
+| `feat` | Fitur baru | `feat(api): tambahkan otentikasi pengguna` |
+| `fix` | Perbaikan bug | `fix(database): perbaiki timeout koneksi` |
+| `perf` | Optimasi performa | `perf(api): optimasi kinerja query` |
+| `revert` | Revert perubahan | `revert(feat): batalkan otentikasi pengguna` |
+| `docs` | Perubahan dokumentasi | `docs(readme): perbarui panduan instalasi` |
+| `style` | Perubahan formatting | `style(code): perbaiki indentasi` |
+| `refactor` | Refactoring kode | `refactor(api): sederhanakan logika endpoint` |
+| `test` | Perubahan testing | `test(api): tambahkan unit test` |
+| `chore` | Perubahan maintenance | `chore(deps): perbarui dependensi` |
 
-### Commit Scopes
+### Scope Commit
 
 | Scope | Deskripsi | Contoh |
 |-------|-----------|--------|
-| `api` | API endpoints | `feat(api): add new endpoint` |
-| `database` | Database schema | `fix(database): fix migration` |
-| `frontend` | Frontend code | `feat(frontend): add dashboard` |
-| `backend` | Backend code | `perf(backen): optimize queries` |
-| `config` | Konfigurasi | `chore(config): update settings` |
-| `deps` | Dependencies | `chore(deps): update packages` |
+| `api` | Endpoint API | `feat(api): tambahkan endpoint baru` |
+| `database` | Skema database | `fix(database): perbaiki migrasi` |
+| `frontend` | Kode frontend | `feat(frontend): tambahkan dashboard` |
+| `backend` | Kode backend | `perf(backend): optimasi query` |
+| `config` | Konfigurasi | `chore(config): perbarui pengaturan` |
+| `deps` | Dependensi | `chore(deps): perbarui paket` |
 
-### Breaking Changes
+### Perubahan Breaking
 
 Untuk perubahan yang bersifat breaking, tambahkan `BREAKING CHANGE:` di footer commit:
 
 ```
-feat(api): add new authentication method
+feat(api): tambahkan metode otentikasi baru
 
-BREAKING CHANGE: Old authentication method removed
+BREAKING CHANGE: Metode otentikasi lama dihapus
 ```
 
-## 🔄 Versioning Rules
+## 🔄 Aturan Versioning
 
 ### Semantic Versioning (SemVer)
 
 Format: `MAJOR.MINOR.PATCH`
 
-- **MAJOR**: Perubahan breaking (API, database schema, arsitektur)
+- **MAJOR**: Perubahan breaking (API, skema database, arsitektur)
 - **MINOR**: Fitur baru backward compatible
 - **PATCH**: Perbaikan bug dan optimasi
 
-### Version Detection Logic
+### Logika Deteksi Version
 
-1. **Breaking Changes** → MAJOR version
-2. **feat type** → MINOR version
-3. **fix, perf, refactor types** → PATCH version
-4. **docs, style, test, chore types** → No version bump
+1. **Perubahan Breaking** → MAJOR version
+2. **Jenis feat** → MINOR version
+3. **Jenis fix, perf, refactor** → PATCH version
+4. **Jenis docs, style, test, chore** → Tidak ada version bump
 
-## 📋 CHANGELOG Format
+## 📋 Format CHANGELOG
 
 CHANGELOG mengikuti format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/):
 
 ```markdown
-## [Version] - YYYY-MM-DD
+## [Versi] - YYYY-MM-DD
 
-### Added
-- New features
+### Ditambahkan
+- Fitur baru
 
-### Changed
-- Changes in existing functionality
+### Diubah
+- Perubahan pada fungsionalitas yang ada
 
-### Fixed
-- Bug fixes
+### Diperbaiki
+- Perbaikan bug
 
-### Security
-- Security-related changes
+### Keamanan
+- Perubahan terkait keamanan
 
-### Tested
-- Testing-related changes
+### Diuji
+- Perubahan terkait testing
 
-### Deprecated
-- Features that will be removed
+### Depresiasi
+- Fitur yang akan dihapus
 ```
 
-## 🚀 Release Process
+## 🚀 Proses Release
 
-### Otomatis (Recommended)
+### Otomatis (Direkomendasikan)
 
 1. Buat commit dengan format conventional commits
 2. Push ke branch `main` atau `master`
-3. CI/CD pipeline akan:
+3. Pipeline CI/CD akan:
    - Mendeteksi jenis perubahan
    - Membuat versi baru
    - Memperbarui CHANGELOG
@@ -139,10 +139,10 @@ Gunakan script versioning:
 ### File Konfigurasi
 
 - `.versionrc.json` - Konfigurasi semantic release
-- `.github/workflows/release.yml` - CI/CD pipeline
-- `.git/hooks/pre-commit` - Pre-commit validation
+- `.github/workflows/release.yml` - Pipeline CI/CD
+- `.git/hooks/pre-commit` - Validasi pre-commit
 
-### Environment Variables
+### Variabel Lingkungan
 
 ```bash
 VERSIONING_ENABLED=true
@@ -151,102 +151,102 @@ CHANGELOG_PATH=CHANGELOG.md
 APP_VERSION=1.0.0
 ```
 
-## 📊 Multi-Component Versioning
+## 📊 Versioning Multi-Komponen
 
-### Component Structure
+### Struktur Komponen
 
-| Component | File | Versioning |
-|-----------|------|------------|
-| Backend | `go.mod` | Go module version |
-| Frontend | `package.json` | NPM package version |
-| Database | Migration files | Schema version |
-| API | URL prefix | `/api/v1/` |
+| Komponen | File | Versioning |
+|----------|------|------------|
+| Backend | `go.mod` | Versi module Go |
+| Frontend | `package.json` | Versi paket NPM |
+| Database | File migrasi | Versi skema |
+| API | Prefiks URL | `/api/v1/` |
 
-### Independent Versioning
+### Versioning Independent
 
-Setiap component dapat memiliki versi berbeda jika menggunakan strategi independent versioning.
+Setiap komponen dapat memiliki versi berbeda jika menggunakan strategi independent versioning.
 
 ## 🧪 Testing
 
-### Unit Tests
+### Unit Test
 
 ```bash
-# Test version detection logic
+# Testing logika deteksi version
 go test ./internal/versioning/...
 
-# Test CHANGELOG generation
+# Testing pembuatan CHANGELOG
 go test ./internal/changelog/...
 ```
 
-### Integration Tests
+### Testing Integrasi
 
 ```bash
-# Test CI/CD pipeline
+# Testing pipeline CI/CD
 ./scripts/test-ci-pipeline.sh
 
-# Test multi-component release
+# Testing release multi-komponen
 ./scripts/test-multi-component.sh
 ```
 
-### E2E Tests
+### Testing E2E
 
 ```bash
-# Full release simulation
+# Simulasi release penuh
 ./scripts/test-e2e-release.sh
 
-# Rollback testing
+# Testing rollback
 ./scripts/test-rollback.sh
 ```
 
 ## 📈 Monitoring
 
-### Metrics
+### Metrik
 
-- **Version Detection Accuracy**: 95%+
-- **Release Success Rate**: 99%+
-- **CHANGELOG Completeness**: 100%
-- **CI/CD Pipeline Time**: < 5 minutes
+- **Akurasi deteksi version**: 95%+
+- **Tingkat keberhasilan release**: 99%+
+- **Kelengkapan CHANGELOG**: 100%
+- **Waktu pipeline CI/CD**: < 5 menit
 
-### Alerts
+### Alert
 
-- Version synchronization failures
-- CI/CD pipeline errors
-- CHANGELOG generation failures
-- Git tag creation failures
+- Kegagalan sinkronisasi versi
+- Error pipeline CI/CD
+- Kegagalan pembuatan CHANGELOG
+- Kegagalan pembuatan Git tag
 
-## 🔒 Security
+## 🔒 Keamanan
 
-### Commit Validation
+### Validasi Commit
 
 - Pre-commit hook memvalidasi format commit
-- Deteksi informasi sensitif dalam commit message
-- Enforce conventional commits format
+- Deteksi informasi sensitif dalam pesan commit
+- Enforce format conventional commits
 
-### Release Security
+### Keamanan Release
 
-- Signed Git tags
-- Verified release artifacts
-- Security scanning in CI/CD
+- Git tag ditandatangani
+- Artifact release diverifikasi
+- Pemindaian keamanan di CI/CD
 
-## 📚 Best Practices
+## 📚 Best Practice
 
-### Commit Message Guidelines
+### Panduan Pesan Commit
 
 1. Gunakan format conventional commits
-2. Deskripsi harus jelas dan singkat
-3. Hindari informasi sensitif dalam commit message
+2. Deskripsi harus jelas dan ringkas
+3. Hindari informasi sensitif dalam pesan commit
 4. Gunakan scope yang relevan
 5. Tambahkan BREAKING CHANGE untuk perubahan breaking
 
-### Versioning Guidelines
+### Panduan Versioning
 
-1. Gunakan MAJOR version untuk breaking changes
+1. Gunakan MAJOR version untuk perubahan breaking
 2. Gunakan MINOR version untuk fitur baru
-3. Gunakan PATCH version untuk bug fixes
-4. Dokumentasikan semua perubahan di CHANGELOG
+3. Gunakan PATCH version untuk perbaikan bug
+4. Dokumentasikan seluruh perubahan di CHANGELOG
 5. Konsisten dalam penamaan versi
 
-### CHANGELOG Guidelines
+### Panduan CHANGELOG
 
 1. Gunakan format Keep a Changelog
 2. Kategorikan perubahan dengan benar
@@ -256,45 +256,45 @@ go test ./internal/changelog/...
 
 ## 🆘 Troubleshooting
 
-### Common Issues
+### Masalah Umum
 
-**Commit Validation Failed**
+**Validasi Commit Gagal**
 ```bash
-# Periksa format commit message
+# Periksa format pesan commit
 git log -1 --oneline
 
-# Perbaiki commit message
+# Perbaiki pesan commit
 git commit --amend
 ```
 
-**Version Detection Failed**
+**Deteksi Version Gagal**
 ```bash
-# Periksa commit messages
+# Periksa pesan commit
 git log --oneline
 
-# Gunakan conventional commits format
+# Gunakan format conventional commits
 ```
 
-**CHANGELOG Update Failed**
+**Pembaharuan CHANGELOG Gagal**
 ```bash
 # Periksa .versionrc.json
 cat .versionrc.json
 
-# Periksa CHANGELOG.md permissions
+# Periksa permission CHANGELOG.md
 ls -la CHANGELOG.md
 ```
 
-### Debug Mode
+### Mode Debug
 
 ```bash
-# Enable debug logging
+# Aktifkan logging debug
 export DEBUG=true
 
-# Run semantic release with debug
+# Jalankan semantic release dengan debug
 npx semantic-release --debug
 ```
 
-## 📞 Support
+## 📞 Dukungan
 
 Untuk pertanyaan atau masalah terkait sistem versioning:
 
@@ -305,3 +305,10 @@ Untuk pertanyaan atau masalah terkait sistem versioning:
 ---
 
 **Catatan**: Sistem versioning ini dirancang untuk meningkatkan kualitas dan konsistensi dalam pengembangan proyek MONIK-ENTERPRISE.
+
+## 🏷️ Informasi Proyek
+
+- **Brain**: dbanie
+- **Developer**: Kwaipilot
+- **Copyright**: Desember 2025
+- **Status**: Free Open Source

@@ -1,144 +1,144 @@
-# Changelog
+# CHANGELOG
 
-All notable changes to this project will be documented in this file.
+Semua perubahan yang layak dicatat untuk proyek ini didokumentasikan dalam file ini.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+Format ini didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+dan proyek ini mengikuti [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Added
-- Multi-component versioning support (backend, frontend, database, API)
-- Automated CHANGELOG generation from git commits
-- Version tracking for database migrations
-- Component-specific versioning rules
-- Git tagging strategy with automatic version tags
-- Draft release mechanism for GitHub
-- Shields.io integration for version and build badges
-- Security event tracking and logging
-- Comprehensive testing framework integration
+### Ditambahkan
+- Dukungan versioning multi-komponen (backend, frontend, database, API)
+- Pembuatan CHANGELOG otomatis dari commit git
+- Pelacakan versi untuk migrasi database
+- Aturan versioning khusus per komponen
+- Strategi tagging Git dengan tag versi otomatis
+- Mekanisme draft release untuk GitHub
+- Integrasi shields.io untuk version dan build badges
+- Pelacakan dan logging event keamanan
+- Integrasi framework testing komprehensif
 
-### Changed
-- Consolidated all documentation into unified CHANGELOG
-- Improved versioning consistency across components
-- Enhanced CI/CD pipeline with semantic release
-- Optimized database migration versioning
-- Streamlined release process with automated tagging
+### Diubah
+- Mengonsolidasikan seluruh dokumentasi ke CHANGELOG terpadu
+- Meningkatkan konsistensi versioning di seluruh komponen
+- Meningkatkan pipeline CI/CD dengan semantic release
+- Mengoptimalkan versioning migrasi database
+- Menyederhanakan proses release dengan tagging otomatis
 
-### Fixed
-- Version synchronization issues between components
-- Missing version information in releases
-- Database schema versioning conflicts
-- CI/CD pipeline timing issues
+### Diperbaiki
+- Masalah sinkronisasi versi antar komponen
+- Informasi versi yang hilang di release
+- Konflik versioning skema database
+- Masalah timing pipeline CI/CD
 
-### Security
-- Enhanced input validation for all API endpoints
-- Improved structured logging for security events
-- Authentication hardening for MikroTik connections
-- Audit trail implementation for user actions
+### Keamanan
+- Peningkatan validasi input untuk semua endpoint API
+- Peningkatan logging terstruktur untuk event keamanan
+- Peningkatan hardening autentikasi untuk koneksi MikroTik
+- Implementasi audit trail untuk aksi pengguna
 
-### Tested
-- Comprehensive API testing suite integration
-- Load testing for high-traffic scenarios
-- Database migration testing
-- Multi-component integration testing
-- End-to-end release process validation
+### Diuji
+- Integrasi suite testing API komprehensif
+- Load testing untuk skenario traffic tinggi
+- Testing migrasi database
+- Testing integrasi multi-komponen
+- Validasi proses release end-to-end
 
-### Deprecated
-- Individual component CHANGELOG files
-- Manual version bumping process
-- Static documentation maintenance
+### Depresiasi
+- File CHANGELOG komponen individual
+- Proses versioning manual
+- Pemeliharaan dokumentasi statis
 
 ---
 
 ## [1.0.0] - 2025-12-26
 
-### Added
-- Initial release of MONIK-ENTERPRISE
-- Scalable monitoring engine architecture
-- Real-time WebSocket monitoring
-- Dynamic WAN/ISP detection
-- Worker pool with load balancing
-- Comprehensive metrics collection
-- Enhanced configuration system
-- Structured logging and error handling
+### Ditambahkan
+- Rilis awal MONIK-ENTERPRISE
+- Arsitektur mesin monitoring yang dapat diskalakan
+- Monitoring real-time WebSocket
+- Deteksi WAN/ISP dinamis
+- Worker pool dengan load balancing
+- Pengumpulan metrik komprehensif
+- Sistem konfigurasi yang ditingkatkan
+- Logging dan penanganan error terstruktur
 
 ### Backend v1.0.0
-- Go 1.23.0 with modular architecture
-- Gin framework for REST API
-- GORM with SQLite database
-- RouterOS integration via go-routeros
-- WebSocket real-time updates
-- Worker pool with circuit breaker
-- Comprehensive logging system
+- Go 1.23.0 dengan arsitektur modular
+- Framework Gin untuk REST API
+- GORM dengan database SQLite
+- Integrasi RouterOS via go-routeros
+- Pembaruan real-time WebSocket
+- Worker pool dengan circuit breaker
+- Sistem logging komprehensif
 
 ### Frontend v1.0.0
-- Real-time dashboard interface
-- WebSocket connection management
-- Traffic visualization charts
-- System health monitoring
-- Interface status tracking
+- Antarmuka dashboard real-time
+- Manajemen koneksi WebSocket
+- Visualisasi traffic dalam grafik
+- Pemantauan kesehatan sistem
+- Pelacakan status interface
 
-### Database Schema v1.0
-- Automatic migration system
-- Interface monitoring tables
-- Traffic snapshot storage
-- Counter reset logging
-- Monthly quota tracking
-- System information storage
+### Skema Database v1.0
+- Sistem migrasi otomatis
+- Tabel monitoring interface
+- Penyimpanan snapshot traffic
+- Logging counter reset
+- Pelacakan kuota bulanan
+- Penyimpanan informasi sistem
 
 ### API v1
-- Health check endpoints
-- Interface management
-- System information
-- Traffic history
-- WAN detection
-- Worker pool management
-- WebSocket statistics
+- Endpoint health check
+- Manajemen interface
+- Informasi sistem
+- Riwayat traffic
+- Deteksi WAN
+- Manajemen worker pool
+- Statistik WebSocket
 
-### Fixed
-- Initial database connection issues
-- MikroTik connection timeout handling
-- WAN detection accuracy improvements
-- Performance optimization for high-load scenarios
+### Diperbaiki
+- Masalah koneksi database awal
+- Penanganan timeout koneksi MikroTik
+- Peningkatan akurasi deteksi WAN
+- Optimasi performa untuk skenario beban tinggi
 
-### Security
-- Input validation for all API endpoints
-- Structured logging for security events
-- Authentication for MikroTik connections
-- Audit trail for user actions
+### Keamanan
+- Validasi input untuk semua endpoint API
+- Logging terstruktur untuk event keamanan
+- Autentikasi untuk koneksi MikroTik
+- Audit trail untuk aksi pengguna
 
-### Tested
-- Comprehensive API testing suite
-- Load testing for 100+ concurrent interfaces
-- Database migration validation
-- WebSocket connection stress testing
-- Error recovery testing
+### Diuji
+- Suite testing API komprehensif
+- Load testing untuk 100+ interface secara bersamaan
+- Validasi migrasi database
+- Testing stress koneksi WebSocket
+- Testing pemulihan error
 
-### Performance
-- 300% improvement in monitoring throughput
-- <100ms response time for 95% of requests
-- 40% reduction in memory usage
-- Even CPU distribution across cores
+### Performa
+- Peningkatan throughput monitoring 300%
+- Waktu respon <100ms untuk 95% request
+- Pengurangan penggunaan memory 40%
+- Distribusi CPU merata di seluruh core
 
 ---
 
 ## [0.1.0] - 2025-12-25
 
-### Added
-- Basic monitoring functionality
-- Interface status tracking
-- Traffic data collection
-- Database storage implementation
-- REST API endpoints
-- Configuration management
+### Ditambahkan
+- Fungsi monitoring dasar
+- Pelacakan status interface
+- Pengumpulan data traffic
+- Implementasi penyimpanan database
+- Endpoint REST API
+- Manajemen konfigurasi
 
-### Fixed
-- Initial setup issues
-- Database migration problems
-- API endpoint errors
-- Configuration loading issues
+### Diperbaiki
+- Masalah setup awal
+- Masalah migrasi database
+- Error endpoint API
+- Masalah loading konfigurasi
 
-### Security
-- Basic authentication implementation
-- Input sanitization for API endpoints
+### Keamanan
+- Implementasi autentikasi dasar
+- Sanitasi input untuk endpoint API

@@ -1,146 +1,151 @@
 # MONIK-ENTERPRISE
 
-**Enterprise monitoring system for MikroTik routers** with unified versioning and CHANGELOG management.
+**Sistem monitoring enterprise untuk router MikroTik** dengan sistem versioning dan CHANGELOG terpadu.
 
-## 🚀 Quick Start
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg)](CHANGELOG.md)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/MarzuQnx/MONIK/actions)
+[![Go Version](https://img.shields.io/badge/Go-1.23.0+-blue.svg)](https://golang.org/dl/)
 
-### Prerequisites
+## 🚀 Panduan Cepat
+
+### Prasyarat
 
 - Go 1.23.0+
 - Git
-- MikroTik RouterOS device
+- Perangkat MikroTik RouterOS
 
-### Installation
+### Instalasi
 
-1. Clone the repository:
+1. Clone repository:
 ```bash
 git clone https://github.com/MarzuQnx/MONIK.git
 cd MONIK-ENTERPRISE
 ```
 
-2. Install dependencies:
+2. Instal dependensi:
 ```bash
 cd backend
 go mod tidy
 ```
 
-3. Configure environment:
+3. Konfigurasi environment:
 ```bash
 cp .env.example .env
-# Edit .env with your MikroTik connection details
+# Edit .env dengan detail koneksi MikroTik Anda
 ```
 
-4. Run the application:
+4. Jalankan aplikasi:
 ```bash
 go run cmd/monik/main.go
 ```
 
-## 📋 Versioning System
+## 📋 Sistem Versioning
 
-This project uses **Semantic Versioning (SemVer)** with **Conventional Commits** for automated version management.
+Proyek ini menggunakan **Semantic Versioning (SemVer)** dengan **Conventional Commits** untuk manajemen versi otomatis.
 
-### Version Format
+### Format Versi
 ```
 MAJOR.MINOR.PATCH
 ```
 
-- **MAJOR**: Breaking changes (API, database schema, architecture)
-- **MINOR**: New features (backward compatible)
-- **PATCH**: Bug fixes and optimizations
+- **MAJOR**: Perubahan yang bersifat breaking (API, skema database, arsitektur)
+- **MINOR**: Fitur baru (backward compatible)
+- **PATCH**: Perbaikan bug dan optimasi
 
-### Commit Message Format
+### Format Pesan Commit
 
-All commits must follow the conventional commits format:
-
-```
-<type>(<scope>): <description>
-
-[optional body]
-
-[optional footer(s)]
-```
-
-#### Commit Types
-
-| Type | Description | Example |
-|------|-------------|---------|
-| `feat` | New feature | `feat(api): add user authentication` |
-| `fix` | Bug fix | `fix(database): fix connection timeout` |
-| `perf` | Performance improvement | `perf(api): optimize query performance` |
-| `revert` | Revert changes | `revert(feat): revert user authentication` |
-| `docs` | Documentation changes | `docs(readme): update installation guide` |
-| `style` | Code formatting | `style(code): fix indentation` |
-| `refactor` | Code refactoring | `refactor(api): simplify endpoint logic` |
-| `test` | Test changes | `test(api): add unit tests` |
-| `chore` | Maintenance tasks | `chore(deps): update dependencies` |
-
-#### Breaking Changes
-
-For breaking changes, add `BREAKING CHANGE:` in the commit footer:
+Semua commit harus mengikuti format conventional commits:
 
 ```
-feat(api): add new authentication method
+<type>(<scope>): <deskripsi>
 
-BREAKING CHANGE: Old authentication method removed
+[badan opsional]
+
+[footer opsional]
+```
+
+#### Jenis Commit
+
+| Jenis | Deskripsi | Contoh |
+|------|-----------|--------|
+| `feat` | Fitur baru | `feat(api): tambahkan otentikasi pengguna` |
+| `fix` | Perbaikan bug | `fix(database): perbaiki timeout koneksi` |
+| `perf` | Peningkatan performa | `perf(api): optimasi kinerja query` |
+| `revert` | Pembatalan perubahan | `revert(feat): batalkan otentikasi pengguna` |
+| `docs` | Perubahan dokumentasi | `docs(readme): perbarui panduan instalasi` |
+| `style` | Pemformatan kode | `style(code): perbaiki indentasi` |
+| `refactor` | Refactoring kode | `refactor(api): sederhanakan logika endpoint` |
+| `test` | Perubahan testing | `test(api): tambahkan unit test` |
+| `chore` | Tugas maintenance | `chore(deps): perbarui dependensi` |
+
+#### Perubahan Breaking
+
+Untuk perubahan yang bersifat breaking, tambahkan `BREAKING CHANGE:` di footer commit:
+
+```
+feat(api): tambahkan metode otentikasi baru
+
+BREAKING CHANGE: Metode otentikasi lama dihapus
 ```
 
 ## 📖 CHANGELOG
 
-The CHANGELOG is automatically generated and maintained in [`CHANGELOG.md`](CHANGELOG.md). It follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
+CHANGELOG dibuat secara otomatis dan dikelola di [`CHANGELOG.md`](CHANGELOG.md). Mengikuti format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-### CHANGELOG Categories
+### Kategori CHANGELOG
 
-- **Added**: New features and functionality
-- **Changed**: Changes in existing functionality
-- **Fixed**: Bug fixes
-- **Security**: Security-related changes
-- **Tested**: Testing-related changes
-- **Deprecated**: Features that will be removed
+- **Ditambahkan**: Fitur dan fungsionalitas baru
+- **Diubah**: Perubahan pada fungsionalitas yang ada
+- **Diperbaiki**: Perbaikan bug
+- **Keamanan**: Perubahan terkait keamanan
+- **Diuji**: Perubahan terkait testing
+- **Depresiasi**: Fitur yang akan dihapus
 
-## 🏗️ Architecture
+## 🏗️ Arsitektur
 
 ### Backend (Go)
-- **Framework**: Gin for REST API
-- **Database**: SQLite with GORM ORM
-- **RouterOS Integration**: go-routeros library
-- **Real-time**: WebSocket for live updates
-- **Monitoring**: Worker pool with load balancing
+- **Framework**: Gin untuk REST API
+- **Database**: SQLite dengan ORM GORM
+- **Integrasi RouterOS**: library go-routeros
+- **Real-time**: WebSocket untuk pembaruan langsung
+- **Monitoring**: Worker pool dengan load balancing
 
 ### Frontend
-- **Real-time dashboard** with WebSocket connection
-- **Traffic visualization** charts
-- **System health monitoring**
-- **Interface status tracking**
+- **Dashboard real-time** dengan koneksi WebSocket
+- **Visualisasi traffic** dalam bentuk grafik
+- **Pemantauan kesehatan sistem**
+- **Pelacakan status interface**
 
-### Database Schema
-- **Automatic migrations** with versioning
-- **Interface monitoring** tables
-- **Traffic snapshot** storage
-- **Counter reset** logging
-- **Monthly quota** tracking
+### Skema Database
+- **Migrasi otomatis** dengan versioning
+- **Tabel monitoring interface**
+- **Penyimpanan snapshot traffic**
+- **Logging counter reset**
+- **Pelacakan kuota bulanan**
 
-## 🔧 Configuration
+## 🔧 Konfigurasi
 
-### Environment Variables
+### Variabel Lingkungan
 
 ```bash
-# Server Configuration
+# Konfigurasi Server
 SERVER_HOST=0.0.0.0
 SERVER_PORT=8080
 
-# Database Configuration
+# Konfigurasi Database
 DB_PATH=data/monik.db
 DB_MAX_OPEN_CONN=25
 DB_MAX_IDLE_CONN=5
 
-# Router Configuration
-ROUTER_IP=172.23.192.1
-ROUTER_PORT=8778
-ROUTER_USERNAME=dbanie
-ROUTER_PASSWORD="==gmg25"
+# Konfigurasi Router
+ROUTER_IP=192.168.88.1
+ROUTER_PORT={YOUR API PORT}
+ROUTER_USERNAME=admin
+ROUTER_PASSWORD=
 ROUTER_TIMEOUT=30s
 
-# Versioning Configuration
+# Konfigurasi Versioning
 VERSIONING_ENABLED=true
 VERSIONING_STRATEGY=semantic
 CHANGELOG_PATH=CHANGELOG.md
@@ -151,117 +156,124 @@ APP_VERSION=1.0.0
 
 ### CI/CD Pipeline
 
-The project includes a GitHub Actions workflow (`.github/workflows/release.yml`) that:
+Proyek ini mencakup workflow GitHub Actions (`.github/workflows/release.yml`) yang:
 
-1. **Detects version changes** from commit messages
-2. **Updates CHANGELOG** automatically
-3. **Creates Git tags** for releases
-4. **Builds and tests** the application
-5. **Creates GitHub releases**
+1. **Mendeteksi perubahan versi** dari pesan commit
+2. **Memperbarui CHANGELOG** secara otomatis
+3. **Membuat Git tag** untuk release
+4. **Build dan test** aplikasi
+5. **Membuat release GitHub**
 
-### Release Process
+### Proses Release
 
-#### Automatic (Recommended)
-1. Make commits with conventional commit format
-2. Push to `main` or `master` branch
-3. CI/CD pipeline handles the rest
+#### Otomatis (Direkomendasikan)
+1. Buat commit dengan format conventional commit
+2. Push ke branch `main` atau `master`
+3. CI/CD pipeline menangani sisanya
 
 #### Manual
 ```bash
-# Run version bump
+# Jalankan version bump
 ./scripts/version-bump.sh
 
-# Update CHANGELOG
+# Perbarui CHANGELOG
 ./scripts/migrate-changelog.sh
 
-# Create tag
+# Buat tag
 git tag v1.1.0
 git push origin v1.1.0
 ```
 
 ## 🧪 Testing
 
-### Unit Tests
+### Unit Test
 ```bash
 cd backend
 go test ./...
 ```
 
-### Versioning Tests
+### Testing Versioning
 ```bash
 ./scripts/test-versioning-simple.sh
 ```
 
-### Integration Tests
+### Testing Integrasi
 ```bash
-# Test CI/CD pipeline
+# Testing CI/CD pipeline
 ./scripts/test-ci-pipeline.sh
 
-# Test multi-component release
+# Testing multi-component release
 ./scripts/test-multi-component.sh
 ```
 
 ## 📊 Monitoring
 
-### System Health
-- **Error rate tracking** across all components
-- **Response time monitoring** for API endpoints
-- **Worker pool metrics** (active workers, queue size)
-- **WebSocket performance** (message throughput, drop rates)
+### Kesehatan Sistem
+- **Pelacakan tingkat error** di seluruh komponen
+- **Pemantauan waktu respon** untuk endpoint API
+- **Metrik worker pool** (worker aktif, ukuran antrian)
+- **Kinerja WebSocket** (throughput pesan, tingkat drop)
 
-### Performance Metrics
-- **Interface monitoring** for 100+ concurrent interfaces
-- **<100ms response time** for 95% of requests
-- **40% memory usage reduction** vs previous implementation
-- **Even CPU distribution** across cores
+### Metrik Performa
+- **Monitoring interface** untuk 100+ interface secara bersamaan
+- **Waktu respon <100ms** untuk 95% request
+- **Pengurangan penggunaan memory 40%** vs implementasi sebelumnya
+- **Distribusi CPU merata** di seluruh core
 
-## 🔒 Security
+## 🔒 Keamanan
 
-### Authentication
-- **Input validation** for all API endpoints
-- **Structured logging** for security events
-- **Audit trail** for user actions
-- **Secure MikroTik connections**
+### Autentikasi
+- **Validasi input** untuk semua endpoint API
+- **Logging terstruktur** untuk event keamanan
+- **Audit trail** untuk aksi pengguna
+- **Koneksi MikroTik aman**
 
-### Best Practices
-- **No credentials in commit messages**
-- **Environment-based configuration**
-- **Regular dependency updates**
-- **Security scanning in CI/CD**
+### Best Practice
+- **Tidak ada credential dalam pesan commit**
+- **Konfigurasi berbasis environment**
+- **Pembaruan dependensi rutin**
+- **Pemindaian keamanan di CI/CD**
 
-## 📚 Documentation
+## 📚 Dokumentasi
 
-- [Versioning Guide](VERSIONING.md) - Complete versioning system documentation
-- [API Documentation](docs/API_DOCS.md) - REST API endpoints and usage
-- [Configuration Guide](docs/CONFIGURATION.md) - Detailed configuration options
-- [Troubleshooting](docs/TROUBLESHOOTING.md) - Common issues and solutions
-- [Architecture Overview](docs/ARCHITECTURE.md) - System architecture details
+- [Panduan Versioning](VERSIONING.md) - Dokumentasi sistem versioning lengkap
+- [Dokumentasi API](docs/API_DOCS.md) - Endpoint dan penggunaan REST API
+- [Panduan Konfigurasi](docs/CONFIGURATION.md) - Opsi konfigurasi detail
+- [Panduan Troubleshooting](docs/TROUBLESHOOTING.md) - Masalah umum dan solusi
+- [Gambaran Arsitektur](docs/ARCHITECTURE.md) - Detail arsitektur sistem
 
-## 🤝 Contributing
+## 🤝 Kontribusi
 
-1. Fork the repository
-2. Create a feature branch
-3. Make commits with conventional commit format
-4. Push to your fork
-5. Create a pull request
+1. Fork repository
+2. Buat branch fitur
+3. Lakukan commit dengan format conventional commit
+4. Push ke fork Anda
+5. Buat pull request
 
-### Commit Message Guidelines
-- Use conventional commit format
-- Be descriptive but concise
-- Include scope when relevant
-- Add `BREAKING CHANGE:` for breaking changes
+### Panduan Pesan Commit
+- Gunakan format conventional commit
+- Bersifat deskriptif namun ringkas
+- Sertakan scope jika relevan
+- Tambahkan `BREAKING CHANGE:` untuk perubahan breaking
 
-## 📄 License
+## 📄 Lisensi
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Proyek ini dilisensikan di bawah lisensi MIT - lihat file [LICENSE](LICENSE) untuk detail.
 
-## 🙏 Acknowledgments
+## 🙏 Ucapan Terima Kasih
 
-- **MikroTik** for RouterOS and API
-- **Go community** for excellent libraries
-- **Semantic Release** for automated versioning
-- **Keep a Changelog** for CHANGELOG standards
+- **MikroTik** untuk RouterOS dan API
+- **Komunitas Go** untuk library yang luar biasa
+- **Semantic Release** untuk versioning otomatis
+- **Keep a Changelog** untuk standar CHANGELOG
 
 ---
 
-**Note**: This project uses a unified versioning system that consolidates all documentation into a single CHANGELOG, eliminating the need for multiple `.md` files while maintaining comprehensive tracking of all changes.
+**Catatan**: Proyek ini menggunakan sistem versioning terpadu yang mengonsolidasikan seluruh dokumentasi ke dalam satu CHANGELOG, menghilangkan kebutuhan akan banyak file `.md` manual sambil tetap menjaga pelacakan perubahan yang komprehensif.
+
+## 🏷️ Informasi Proyek
+
+- **Brain**: dbanie
+- **Developer**: Kwaipilot
+- **Copyright**: Desember 2025
+- **Status**: Free Open Source
